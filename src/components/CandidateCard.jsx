@@ -21,11 +21,13 @@ async function waitForImagesLoaded(rootElement) {
 function CandidateCard({ candidate, isEditing, normalizeLines, onToggleEdit, onUpdateField }) {
   const previewRef = useRef(null);
   const [downloadError, setDownloadError] = useState("");
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const downloadCandidateImage = async () => {
     const node = previewRef.current;
     if (!node) return;
     let hiddenRoot = null;
+    setIsDownloading(true);
     try {
       const exportNode = node.cloneNode(true);
       exportNode.style.width = "900px";
@@ -66,6 +68,8 @@ function CandidateCard({ candidate, isEditing, normalizeLines, onToggleEdit, onU
     } catch (error) {
       setDownloadError(`Khong the download anh: ${error.message}`);
       if (hiddenRoot?.parentNode) hiddenRoot.parentNode.removeChild(hiddenRoot);
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -80,9 +84,14 @@ function CandidateCard({ candidate, isEditing, normalizeLines, onToggleEdit, onU
             <i className="fa-solid fa-pen-to-square mr-2" />
             {isEditing ? "Done" : "Edit"}
           </button>
-          <button type="button" className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700" onClick={downloadCandidateImage}>
-            <i className="fa-solid fa-download mr-2" />
-            Download
+          <button
+            type="button"
+            className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
+            onClick={downloadCandidateImage}
+            disabled={isDownloading}
+          >
+            <i className={`mr-2 fa-solid ${isDownloading ? "fa-spinner fa-spin" : "fa-download"}`} />
+            {isDownloading ? "Dang tai..." : "Download"}
           </button>
         </div>
       </div>
