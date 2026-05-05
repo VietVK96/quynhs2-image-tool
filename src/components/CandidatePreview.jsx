@@ -95,8 +95,8 @@ function CandidatePreview({ candidate, setCardRef }) {
         >
           <div
             style={{
-              width: '40px',
-              height: '40px',
+              width: '35px',
+              height: '35px',
               backgroundColor: '#ffffff',
               borderRadius: '50%',
               display: 'flex',
@@ -104,7 +104,7 @@ function CandidatePreview({ candidate, setCardRef }) {
               alignItems: 'center',
             }}
           >
-            <i className="fa-solid fa-location-dot" style={{ color: '#000000', fontSize: '26px' }} />
+            <i className="fa-solid fa-location-dot" style={{ color: '#000000', fontSize: '25px' }} />
           </div>
           <div>
             <p style={{ ...stelaStyles[500], fontSize: "10.7px", fontWeight: 500, lineHeight: 1 }}>
