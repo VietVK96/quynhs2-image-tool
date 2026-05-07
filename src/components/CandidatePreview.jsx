@@ -61,7 +61,7 @@ function CandidatePreview({ candidate, setCardRef }) {
         <h2
           style={{
             ...paytoneStyle,
-            marginTop: "0.5vw",
+            marginTop: "12px",
             fontSize: "37px",
             fontWeight: 700,
             lineHeight: 1,
@@ -196,7 +196,7 @@ function CandidatePreview({ candidate, setCardRef }) {
         {candidate.workExperiences.slice(0, 5).map((item, index) => (
           <li
             key={`${candidate.id}-work-${index}`}
-            style={{ display: "flex", alignItems: "center", gap: "1vw", }}
+            style={{ display: "flex", alignItems: "center", gap: "16px", }}
           >
             <span
               style={{
@@ -238,12 +238,12 @@ function CandidatePreview({ candidate, setCardRef }) {
               ...poppinsStyle,
               borderRadius: "9999px",
               backgroundColor: "#f1f5f9",
-              padding: "0.4vw 1vw",
+              padding: "8px 16px",
               textAlign: "center",
               fontSize: "14px",
               fontWeight: 600,
               color: "#004aad",
-              marginBottom: "0.8vw"
+              marginBottom: "12px"
             }}
           >
             {item}
