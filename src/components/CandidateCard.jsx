@@ -1,62 +1,34 @@
-import { useRef, useState } from "react";
-import { toPng } from "html-to-image";
+import { useEffect, useRef, useState } from "react";
+import { capturePreviewToPngDataUrl } from "../utils/captureCandidatePng";
 import CandidateEditForm from "./CandidateEditForm";
 import CandidatePreview from "./CandidatePreview";
 
-async function waitForImagesLoaded(rootElement) {
-  const images = Array.from(rootElement.querySelectorAll("img"));
-  if (images.length === 0) return;
-  await Promise.all(
-    images.map((img) => {
-      if (img.complete && img.naturalWidth > 0) return Promise.resolve();
-      return new Promise((resolve) => {
-        const done = () => resolve();
-        img.addEventListener("load", done, { once: true });
-        img.addEventListener("error", done, { once: true });
-      });
-    })
-  );
-}
-
-function CandidateCard({ candidate, isEditing, normalizeLines, onToggleEdit, onUpdateField }) {
+function CandidateCard({
+  candidate,
+  isEditing,
+  normalizeLines,
+  onToggleEdit,
+  onUpdateField,
+  registerPreviewRef,
+  isSelected,
+  onToggleSelect
+}) {
   const previewRef = useRef(null);
   const [downloadError, setDownloadError] = useState("");
   const [isDownloading, setIsDownloading] = useState(false);
 
+  useEffect(() => {
+    return () => {
+      registerPreviewRef?.(candidate.id, null);
+    };
+  }, [candidate.id, registerPreviewRef]);
+
   const downloadCandidateImage = async () => {
     const node = previewRef.current;
     if (!node) return;
-    let hiddenRoot = null;
     setIsDownloading(true);
     try {
-      const exportNode = node.cloneNode(true);
-      exportNode.style.width = "900px";
-      exportNode.style.height = "900px";
-      exportNode.style.maxWidth = "900px";
-      exportNode.style.margin = "0";
-
-      hiddenRoot = document.createElement("div");
-      hiddenRoot.style.position = "fixed";
-      hiddenRoot.style.left = "-100000px";
-      hiddenRoot.style.top = "0";
-      hiddenRoot.style.opacity = "0";
-      hiddenRoot.style.pointerEvents = "none";
-      hiddenRoot.appendChild(exportNode);
-      document.body.appendChild(hiddenRoot);
-
-      await waitForImagesLoaded(exportNode);
-      const dataUrl = await toPng(exportNode, {
-        cacheBust: true,
-        pixelRatio: 2,
-        backgroundColor: "transparent",
-        width: 900,
-        height: 900,
-        canvasWidth: 900,
-        canvasHeight: 900
-      });
-
-      if (hiddenRoot.parentNode) hiddenRoot.parentNode.removeChild(hiddenRoot);
-
+      const dataUrl = await capturePreviewToPngDataUrl(node);
       const anchor = document.createElement("a");
       anchor.href = dataUrl;
       anchor.download = `${candidate.code || candidate.id}.png`;
@@ -67,7 +39,6 @@ function CandidateCard({ candidate, isEditing, normalizeLines, onToggleEdit, onU
       setDownloadError("");
     } catch (error) {
       setDownloadError(`Khong the download anh: ${error.message}`);
-      if (hiddenRoot?.parentNode) hiddenRoot.parentNode.removeChild(hiddenRoot);
     } finally {
       setIsDownloading(false);
     }
@@ -76,8 +47,19 @@ function CandidateCard({ candidate, isEditing, normalizeLines, onToggleEdit, onU
   return (
     <article className="rounded-2xl bg-white p-4 shadow-sm">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <div className="text-sm text-slate-600">
-          Mã ứng viên: <span className="font-semibold text-slate-900">{candidate.code}</span>
+        <div className="flex flex-wrap items-center gap-3 text-sm text-slate-600">
+          {onToggleSelect ? (
+            <label className="inline-flex cursor-pointer items-center gap-2 select-none">
+              <input
+                type="checkbox"
+                className="h-4 w-4 rounded border-slate-300"
+                checked={!!isSelected}
+                onChange={() => onToggleSelect(candidate.id)}
+              />
+                 Mã ứng viên: <span className="font-semibold text-slate-900">{candidate.code}</span>
+            </label>
+          ) : 
+          <span>Mã ứng viên: <span className="font-semibold text-slate-900">{candidate.code}</span></span>}
         </div>
         <div className="flex gap-2">
           <button type="button" className="rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-900" onClick={onToggleEdit}>
@@ -106,7 +88,13 @@ function CandidateCard({ candidate, isEditing, normalizeLines, onToggleEdit, onU
         />
       ) : null}
 
-      <CandidatePreview candidate={candidate} setCardRef={(node) => { previewRef.current = node; }} />
+      <CandidatePreview
+        candidate={candidate}
+        setCardRef={(node) => {
+          previewRef.current = node;
+          registerPreviewRef?.(candidate.id, node);
+        }}
+      />
     </article>
   );
 }

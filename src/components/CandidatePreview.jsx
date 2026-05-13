@@ -234,7 +234,15 @@ function CandidatePreview({ candidate, setCardRef }) {
             >
               {icons[index % icons.length]}
             </span>
-            <span style={{ ...poppinsStyle, fontSize: "16px", fontWeight: 600, lineHeight: 1.2, flex: 1 }}>
+            <span
+              style={{
+                ...poppinsStyle,
+                fontSize: candidate.workExperienceFontSize || "16px",
+                fontWeight: 600,
+                lineHeight: 1.2,
+                flex: 1
+              }}
+            >
               {item}
             </span>
           </li>
@@ -261,7 +269,7 @@ function CandidatePreview({ candidate, setCardRef }) {
               backgroundColor: "#f1f5f9",
               padding: "8px 16px",
               textAlign: "center",
-              fontSize: "14px",
+              fontSize: candidate.skillsFontSize || "14px",
               fontWeight: 600,
               color: "#004aad",
               marginBottom: "12px"
