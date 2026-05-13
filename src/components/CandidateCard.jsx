@@ -9,6 +9,7 @@ function CandidateCard({
   normalizeLines,
   onToggleEdit,
   onUpdateField,
+  onBulkUpdateField,
   registerPreviewRef,
   isSelected,
   onToggleSelect
@@ -85,6 +86,7 @@ function CandidateCard({
           candidate={candidate}
           normalizeLines={normalizeLines}
           onUpdateField={onUpdateField}
+          onBulkUpdateField={onBulkUpdateField}
         />
       ) : null}
 

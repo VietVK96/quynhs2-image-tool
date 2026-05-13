@@ -10,6 +10,7 @@ import * as XLSX from "xlsx";
 import JSZip from "jszip";
 import CandidateCard from "./components/CandidateCard";
 import { capturePreviewToPngDataUrl } from "./utils/captureCandidatePng";
+import { downloadSampleExcel100Candidates } from "./utils/sampleExcel";
 
 const STORAGE_KEY = "candidate_profiles_v1";
 
@@ -194,6 +195,10 @@ function App() {
     );
   };
 
+  const updateAllCandidatesField = (key, value) => {
+    setCandidates((prev) => prev.map((candidate) => ({ ...candidate, [key]: value })));
+  };
+
   const handleClearLocalStorage = () => {
     const isConfirmed = window.confirm(
       "Bạn có chắc chắn muốn xóa toàn bộ dữ liệu đã lưu trong localStorage không?"
@@ -278,6 +283,14 @@ function App() {
           </label>
           <button
             type="button"
+            className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50"
+            onClick={() => downloadSampleExcel100Candidates()}
+          >
+            <i className="fa-solid fa-file-excel" />
+            Tải Excel mẫu
+          </button>
+          <button
+            type="button"
             className="inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
             onClick={handleClearLocalStorage}
           >
@@ -332,7 +345,7 @@ function App() {
                 onClick={selectAllVisible}
                 disabled={bulkDownloading}
               >
-                Chọn tất cả hiển thị
+                Chọn tất cả
               </button>
               <button
                 type="button"
@@ -349,7 +362,7 @@ function App() {
                 disabled={bulkDownloading || selectedCount === 0}
               >
                 <i className="fa-solid fa-file-zipper mr-2" />
-                ZIP đã chọn ({selectedCount})
+                Tải xuống file đã chọn ({selectedCount})
               </button>
               <button
                 type="button"
@@ -358,7 +371,7 @@ function App() {
                 disabled={bulkDownloading || filteredCandidates.length === 0}
               >
                 <i className="fa-solid fa-download mr-2" />
-                ZIP tất cả hiển thị ({filteredCandidates.length})
+                Tải xuống toàn bộ ({filteredCandidates.length})
               </button>
               {bulkDownloading ? (
                 <span className="text-sm text-slate-600">
@@ -391,6 +404,7 @@ function App() {
                   setEditingId((prev) => (prev === candidate.id ? null : candidate.id))
                 }
                 onUpdateField={(key, value) => updateCandidateField(candidate.id, key, value)}
+                onBulkUpdateField={updateAllCandidatesField}
                 registerPreviewRef={registerPreviewRef}
                 isSelected={!!selectedIds[candidate.id]}
                 onToggleSelect={toggleSelect}

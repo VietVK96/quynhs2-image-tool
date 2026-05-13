@@ -1,12 +1,12 @@
 import { toPng } from "html-to-image";
 
-export async function waitForImagesLoaded(rootElement) {
-  const images = Array.from(rootElement.querySelectorAll("img"));
+export async function waitForImagesLoaded(rootElement: Element): Promise<void> {
+  const images = Array.from(rootElement.querySelectorAll("img")) as HTMLImageElement[];
   if (images.length === 0) return;
   await Promise.all(
     images.map((img) => {
       if (img.complete && img.naturalWidth > 0) return Promise.resolve();
-      return new Promise((resolve) => {
+      return new Promise<void>((resolve) => {
         const done = () => resolve();
         img.addEventListener("load", done, { once: true });
         img.addEventListener("error", done, { once: true });
@@ -15,14 +15,11 @@ export async function waitForImagesLoaded(rootElement) {
   );
 }
 
-/**
- * @param {HTMLElement} node - live preview root
- * @returns {Promise<string>} data URL (image/png)
- */
-export async function capturePreviewToPngDataUrl(node) {
-  let hiddenRoot = null;
+/** @param node - live preview root */
+export async function capturePreviewToPngDataUrl(node: HTMLElement): Promise<string> {
+  let hiddenRoot: HTMLDivElement | null = null;
   try {
-    const exportNode = node.cloneNode(true);
+    const exportNode = node.cloneNode(true) as HTMLElement;
     exportNode.style.width = "900px";
     exportNode.style.height = "900px";
     exportNode.style.maxWidth = "900px";
